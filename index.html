@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#ffd6ea" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Diario Marcia" />
+  <title>Diario Allenamento — Gruppo Marcia · Atletica AMA Civitanova</title>
+  <style>
+    /* =========================================================
+       DIARIO ALLENAMENTO MANGA — Gruppo Marcia
+       Atletica AMA Civitanova · Coach P. Padovan
+       ========================================================= */
+    :root {
+      --pink: #ffc2e0;
+      --pink-d: #ff8cc6;
+      --lilac: #d9c8ff;
+      --violet: #7c5cc4;
+      --violet-d: #4b3590;
+      --sky: #c8ecff;
+      --sky-d: #6cc4f0;
+      --yellow: #fff3b0;
+      --yellow-d: #ffd84d;
+      --ink: #3b2a5a;
+      --muted: #7d6e9b;
+      --white: #ffffff;
+      --ok: #3ba776;
+      --err: #e0526f;
+      --font: "Arial Rounded MT Bold", "Nunito", ui-rounded, "SF Pro Rounded", "Chalkboard SE", "Comic Sans MS", "Trebuchet MS", system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      font-family: var(--font);
+      color: var(--ink);
+      min-height: 100vh;
+      overflow-x: hidden;
+      background:
+        radial-gradient(circle at 12% 8%, #fff 0 2px, transparent 3px) 0 0 / 46px 46px,
+        linear-gradient(180deg, #ffe4f2 0%, #f0e4ff 45%, #dff3ff 100%);
+      background-attachment: fixed;
+      padding: calc(16px + env(safe-area-inset-top)) calc(14px + env(safe-area-inset-right))
+               calc(44px + env(safe-area-inset-bottom)) calc(14px + env(safe-area-inset-left));
+    }
+    .wrap { max-width: 540px; margin: 0 auto; width: 100%; }
+
+    /* ---------- Intestazione ---------- */
+    header { text-align: center; margin-bottom: 12px; }
+    .badge {
+      display: inline-block;
+      background: var(--yellow);
+      color: var(--violet-d);
+      border: 2.5px solid var(--violet);
+      box-shadow: 3px 3px 0 var(--lilac);
+      padding: 5px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      letter-spacing: .3px;
+    }
+    h1 {
+      margin: 10px 0 4px;
+      font-size: 31px;
+      line-height: 1.1;
+      color: #fff;
+      -webkit-text-stroke: 1.5px var(--violet-d);
+      paint-order: stroke fill;
+      text-shadow: 3px 3px 0 var(--pink-d), 6px 6px 0 var(--lilac);
+      letter-spacing: .5px;
+    }
+    h1 .sp { display: inline-block; animation: twinkle 1.8s infinite ease-in-out; }
+    h1 .sp:last-child { animation-delay: .9s; }
+    .sub { color: var(--muted); font-size: 13px; }
+
+    /* ---------- Palco animato ---------- */
+    .stage {
+      position: relative;
+      background: linear-gradient(180deg, var(--sky) 0%, #fdf1ff 100%);
+      border: 3px solid var(--violet);
+      border-radius: 24px;
+      box-shadow: 5px 5px 0 var(--lilac);
+      padding: 8px 10px 10px;
+      margin: 12px 0 16px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 6px;
+      overflow: hidden;
+      min-height: 150px;
+    }
+    .stage .deco { position: absolute; font-size: 16px; animation: twinkle 2.2s infinite ease-in-out; pointer-events: none; }
+    .deco.d1 { top: 8px; left: 10px; }
+    .deco.d2 { top: 14px; left: 46%; animation-delay: .6s; }
+    .deco.d3 { top: 36px; right: 40%; animation-delay: 1.1s; font-size: 13px; }
+    .deco.d4 { top: 6px; right: 10px; animation-delay: .3s; }
+    .walker-box { position: relative; width: 46%; min-width: 0; text-align: center; }
+    .walker-box svg { width: 100%; max-width: 150px; height: auto; display: block; margin: 0 auto; overflow: visible; }
+    .ground {
+      position: absolute; left: 0; right: 0; bottom: 2px; height: 6px; border-radius: 6px;
+      background: repeating-linear-gradient(90deg, var(--pink-d) 0 14px, transparent 14px 26px);
+      animation: groundMove .7s linear infinite;
+      opacity: .75;
+    }
+    @keyframes groundMove { from { background-position: 0 0; } to { background-position: -26px 0; } }
+
+    /* ragazza che marcia: le gambe e le braccia oscillano */
+    .girl { --walk: .7s; }
+    .girl .legL, .girl .legR, .girl .armL, .girl .armR, .girl .tail, .girl .bodyg {
+      transform-box: view-box;
+    }
+    .girl .legL { transform-origin: 54px 90px; animation: swingA var(--walk) infinite ease-in-out; }
+    .girl .legR { transform-origin: 66px 90px; animation: swingB var(--walk) infinite ease-in-out; }
+    .girl .armL { transform-origin: 46px 62px; animation: swingB var(--walk) infinite ease-in-out; }
+    .girl .armR { transform-origin: 74px 62px; animation: swingA var(--walk) infinite ease-in-out; }
+    .girl .tail { transform-origin: 80px 34px; animation: tailWag calc(var(--walk) * 1.4) infinite ease-in-out; }
+    .girl .bodyg { animation: bob calc(var(--walk) / 2) infinite ease-in-out; }
+    @keyframes swingA { 0%,100% { transform: rotate(-24deg); } 50% { transform: rotate(24deg); } }
+    @keyframes swingB { 0%,100% { transform: rotate(24deg); } 50% { transform: rotate(-24deg); } }
+    @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+    @keyframes tailWag { 0%,100% { transform: rotate(-10deg); } 50% { transform: rotate(14deg); } }
+    .girl .eyesHappy, .girl .mouthWow { display: none; }
+    .girl.party .eyesNormal, .girl.party .mouthNormal { display: none; }
+    .girl.party .eyesHappy, .girl.party .mouthWow { display: inline; }
+    .girl.party .legL, .girl.party .legR { animation: none; transform: rotate(0); }
+    .girl.party .armL { animation: cheerL .35s infinite ease-in-out alternate; }
+    .girl.party .armR { animation: cheerR .35s infinite ease-in-out alternate; }
+    .girl.party .bodyg { animation: jump .45s infinite ease-out; }
+    @keyframes cheerL { from { transform: rotate(150deg); } to { transform: rotate(175deg); } }
+    @keyframes cheerR { from { transform: rotate(-150deg); } to { transform: rotate(-175deg); } }
+    @keyframes jump { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
+
+    .mascot { flex: 1; min-width: 0; text-align: center; padding-bottom: 6px; }
+    .bubble {
+      position: relative;
+      background: #fff;
+      border: 2.5px solid var(--violet);
+      border-radius: 18px;
+      padding: 7px 8px 8px;
+      box-shadow: 3px 3px 0 var(--lilac);
+      transition: background .25s;
+    }
+    .bubble::after {
+      content: ""; position: absolute; left: -9px; bottom: 16px;
+      width: 14px; height: 14px; background: inherit;
+      border-left: 2.5px solid var(--violet); border-bottom: 2.5px solid var(--violet);
+      transform: rotate(45deg);
+    }
+    .mood-emoji { font-size: 40px; line-height: 1.1; display: inline-block; }
+    .mood-emoji.bounce { animation: popIn .35s ease-out; }
+    @keyframes popIn { 0% { transform: scale(.5) rotate(-12deg); } 60% { transform: scale(1.25) rotate(6deg); } 100% { transform: scale(1) rotate(0); } }
+    .mood-label { font-size: 12px; line-height: 1.25; margin-top: 3px; color: var(--ink); }
+    .pop-tag {
+      position: absolute; top: 8px; left: 38%;
+      font-size: 17px; color: #fff; -webkit-text-stroke: 1px var(--violet-d); paint-order: stroke fill;
+      text-shadow: 2px 2px 0 var(--pink-d);
+      opacity: 0; pointer-events: none; transform: rotate(-8deg);
+    }
+    .pop-tag.show { animation: tagPop .7s ease-out; }
+    @keyframes tagPop { 0% { opacity: 0; transform: scale(.3) rotate(-20deg); } 25% { opacity: 1; transform: scale(1.3) rotate(-8deg); } 100% { opacity: 0; transform: scale(1) translateY(-14px) rotate(-8deg); } }
+    @keyframes twinkle { 0%,100% { opacity: .35; transform: scale(.8) rotate(0); } 50% { opacity: 1; transform: scale(1.2) rotate(15deg); } }
+
+    /* ---------- Modulo ---------- */
+    form.card {
+      background: #fff;
+      border: 3px solid var(--violet);
+      border-radius: 26px;
+      padding: 18px 16px 20px;
+      box-shadow: 6px 6px 0 var(--lilac);
+    }
+    .field { margin-bottom: 16px; min-width: 0; }
+    label, .lbl {
+      display: block; font-size: 14px; margin-bottom: 6px; color: var(--violet-d);
+    }
+    .opt { color: var(--muted); font-size: 12px; }
+    select, input[type="date"], input[type="text"], textarea {
+      width: 100%; min-width: 0; max-width: 100%;
+      background: #fffafd;
+      color: var(--ink);
+      border: 2.5px solid var(--lilac);
+      border-radius: 16px;
+      padding: 12px 13px;
+      font-size: 16px; /* 16px evita lo zoom automatico di Safari iOS */
+      font-family: inherit;
+      outline: none;
+      -webkit-appearance: none; appearance: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    select, input[type="date"], input[type="text"] { height: 50px; }
+    input[type="date"] { display: block; text-align: left; }
+    select {
+      padding-right: 38px;
+      background-image: linear-gradient(45deg, transparent 50%, var(--violet) 50%), linear-gradient(135deg, var(--violet) 50%, transparent 50%);
+      background-position: calc(100% - 20px) 21px, calc(100% - 14px) 21px;
+      background-size: 6px 6px, 6px 6px;
+      background-repeat: no-repeat;
+    }
+    select:focus, input:focus, textarea:focus {
+      border-color: var(--pink-d);
+      box-shadow: 0 0 0 4px rgba(255, 140, 198, .25);
+    }
+    textarea { min-height: 92px; resize: vertical; }
+    .row-2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+
+    /* ---------- Scala Borg ---------- */
+    .borg-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .borg-num {
+      min-width: 44px; text-align: center; padding: 2px 10px; border-radius: 12px;
+      border: 2.5px solid var(--violet); background: var(--yellow); color: var(--violet-d); font-size: 18px;
+    }
+    .borg-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; margin-top: 6px; }
+    .borg-btn {
+      height: 54px;
+      border-radius: 16px;
+      border: 2.5px solid var(--violet);
+      color: var(--violet-d);
+      font-family: inherit; font-size: 21px; font-weight: 800;
+      cursor: pointer; padding: 0;
+      box-shadow: 2px 3px 0 rgba(124, 92, 196, .35);
+      transition: transform .12s, box-shadow .12s, filter .15s;
+      touch-action: manipulation;
+    }
+    .borg-btn:active { transform: scale(.92); }
+    .borg-btn.active {
+      transform: translateY(-3px) scale(1.1);
+      box-shadow: 0 0 0 3px #fff, 0 0 0 6px var(--violet), 0 0 18px 4px rgba(255, 216, 77, .9);
+      animation: glow 1.1s infinite ease-in-out;
+      z-index: 1; position: relative;
+    }
+    @keyframes glow { 50% { filter: brightness(1.12) saturate(1.2); } }
+    .borg-now {
+      display: flex; align-items: center; gap: 10px;
+      margin-top: 12px; padding: 10px 12px;
+      border: 2.5px solid var(--violet); border-radius: 18px;
+      transition: background .25s;
+    }
+    .borg-now .big { font-size: 34px; line-height: 1; }
+    .borg-now .t1 { font-size: 15px; }
+    .borg-now .t2 { font-size: 13px; color: var(--ink); opacity: .85; margin-top: 2px; }
+    .legend { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 12px; }
+    .lg {
+      display: flex; align-items: center; gap: 8px; min-width: 0;
+      padding: 8px 9px; border-radius: 14px; border: 2.5px solid transparent;
+      opacity: .72; transition: transform .15s, opacity .15s, border-color .15s, box-shadow .15s;
+    }
+    .lg .e { font-size: 22px; line-height: 1; flex: none; }
+    .lg .n { font-size: 14px; font-weight: 800; color: var(--violet-d); }
+    .lg .d { font-size: 12px; color: var(--ink); line-height: 1.2; }
+    .lg.on { opacity: 1; transform: scale(1.03); border-color: var(--violet); box-shadow: 3px 3px 0 var(--lilac); }
+
+    /* ---------- Suoni ---------- */
+    .sound-toggle {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      background: var(--yellow); border: 2.5px solid var(--violet); border-radius: 16px;
+      padding: 10px 13px; margin: 4px 0 16px; font-size: 14px; color: var(--violet-d);
+    }
+    .switch { position: relative; width: 56px; height: 32px; flex: none; display: inline-block; margin: 0; }
+    .switch input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; margin: 0; cursor: pointer; z-index: 2; }
+    .switch .slider {
+      position: absolute; inset: 0; border-radius: 999px; background: #cfc6e6; border: 2.5px solid var(--violet);
+      transition: background .2s;
+    }
+    .switch .slider::before {
+      content: ""; position: absolute; width: 22px; height: 22px; left: 3px; top: 3px; border-radius: 50%;
+      background: #fff; border: 2px solid var(--violet); transition: transform .2s;
+    }
+    .switch input:checked + .slider { background: var(--pink-d); }
+    .switch input:checked + .slider::before { transform: translateX(24px); }
+    .switch input:focus-visible + .slider { box-shadow: 0 0 0 4px rgba(255, 140, 198, .4); }
+
+    /* ---------- Pulsante invio ---------- */
+    .submit-btn {
+      width: 100%; min-height: 60px;
+      background: linear-gradient(135deg, var(--pink-d), #b794f6);
+      color: #fff;
+      -webkit-text-stroke: .6px var(--violet-d); paint-order: stroke fill;
+      text-shadow: 2px 2px 0 var(--violet-d);
+      border: 3px solid var(--violet-d);
+      border-radius: 20px;
+      font-family: inherit; font-size: 19px; font-weight: 800; letter-spacing: .5px;
+      cursor: pointer;
+      box-shadow: 0 5px 0 var(--violet-d);
+      transition: transform .1s, box-shadow .1s, opacity .2s;
+      touch-action: manipulation;
+    }
+    .submit-btn:active { transform: translateY(4px); box-shadow: 0 1px 0 var(--violet-d); }
+    .submit-btn:disabled { opacity: .6; cursor: not-allowed; }
+
+    .status {
+      margin-top: 16px; padding: 13px 14px; border-radius: 16px; font-size: 14px; line-height: 1.45;
+      display: none; border: 2.5px solid;
+    }
+    .status.ok { display: block; background: #eafaf2; border-color: var(--ok); color: #1d5c42; }
+    .status.err { display: block; background: #ffeef2; border-color: var(--err); color: #8a2a40; }
+    .status .small { display: block; margin-top: 6px; font-size: 12px; opacity: .85; }
+    footer { text-align: center; color: var(--muted); font-size: 12px; margin-top: 18px; line-height: 1.5; }
+
+    /* ---------- Effetto WOW + coriandoli ---------- */
+    #fxLayer { position: fixed; inset: 0; pointer-events: none; z-index: 50; overflow: hidden; }
+    .wow {
+      position: absolute; left: 50%; top: 34%;
+      width: 230px; height: 230px; margin: -115px 0 0 -115px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--yellow-d);
+      clip-path: polygon(50% 0%, 61% 14%, 79% 7%, 80% 25%, 98% 29%, 87% 45%, 100% 58%, 82% 65%, 84% 84%, 65% 80%, 55% 98%, 44% 82%, 25% 93%, 22% 74%, 3% 68%, 15% 52%, 2% 37%, 20% 31%, 21% 12%, 39% 18%);
+      animation: wowAnim 1.9s ease-out forwards;
+    }
+    .wow span {
+      font-size: 54px; color: #fff; -webkit-text-stroke: 3px var(--violet-d); paint-order: stroke fill;
+      text-shadow: 4px 4px 0 var(--pink-d); transform: rotate(-8deg); letter-spacing: 1px;
+    }
+    @keyframes wowAnim {
+      0% { transform: scale(.1) rotate(-30deg); opacity: 0; }
+      18% { transform: scale(1.15) rotate(6deg); opacity: 1; }
+      30% { transform: scale(1) rotate(-3deg); }
+      80% { transform: scale(1.05) rotate(2deg); opacity: 1; }
+      100% { transform: scale(1.3) rotate(0); opacity: 0; }
+    }
+    .confetto {
+      position: absolute; top: -30px; font-size: 20px; line-height: 1;
+      animation: fall linear forwards;
+    }
+    @keyframes fall {
+      0% { transform: translateY(0) rotate(0); opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(105vh) rotate(540deg); opacity: 0; }
+    }
+
+    @media (max-width: 360px) {
+      h1 { font-size: 26px; }
+      .borg-grid { gap: 6px; }
+      .borg-btn { font-size: 19px; height: 50px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .stage .deco, h1 .sp, .ground, .borg-btn.active { animation: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+
+    <header>
+      <div class="badge">Atletica AMA Civitanova • Gruppo Marcia</div>
+      <h1><span class="sp">✨</span> Diario Allenamento <span class="sp">✨</span></h1>
+      <div class="sub">Registra la seduta in un attimo • Coach P. Padovan</div>
+    </header>
+
+    <!-- Palco: ragazza che marcia + mascotte che cambia espressione -->
+    <div class="stage" aria-label="Animazione marcia">
+      <span class="deco d1">⭐</span><span class="deco d2">💗</span>
+      <span class="deco d3">✦</span><span class="deco d4">🌸</span>
+      <span class="pop-tag" id="popTag">Pop!</span>
+
+      <div class="walker-box">
+        <svg class="girl" id="girl" viewBox="0 0 120 140" role="img" aria-label="Ragazza che marcia">
+          <ellipse cx="60" cy="132" rx="26" ry="4" fill="rgba(124,92,196,.2)"/>
+          <g class="bodyg">
+            <!-- coda di cavallo -->
+            <g class="tail">
+              <path d="M80 30 C100 26 108 44 96 58 C98 46 92 38 80 38 Z" fill="#9b7be6" stroke="#4b3590" stroke-width="2" stroke-linejoin="round"/>
+              <circle cx="80" cy="32" r="4.5" fill="#ffd84d" stroke="#4b3590" stroke-width="1.5"/>
+            </g>
+            <!-- braccia -->
+            <g class="armL">
+              <polyline points="46,62 40,76 48,86" fill="none" stroke="#4b3590" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+              <polyline points="46,62 40,76 48,86" fill="none" stroke="#ffe3d2" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </g>
+            <g class="armR">
+              <polyline points="74,62 80,76 72,86" fill="none" stroke="#4b3590" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+              <polyline points="74,62 80,76 72,86" fill="none" stroke="#ffe3d2" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </g>
+            <!-- gambe -->
+            <g class="legL">
+              <line x1="54" y1="90" x2="54" y2="122" stroke="#4b3590" stroke-width="11" stroke-linecap="round"/>
+              <line x1="54" y1="90" x2="54" y2="122" stroke="#ffe3d2" stroke-width="7" stroke-linecap="round"/>
+              <ellipse cx="57" cy="125" rx="9" ry="5" fill="#ff8cc6" stroke="#4b3590" stroke-width="2"/>
+            </g>
+            <g class="legR">
+              <line x1="66" y1="90" x2="66" y2="122" stroke="#4b3590" stroke-width="11" stroke-linecap="round"/>
+              <line x1="66" y1="90" x2="66" y2="122" stroke="#ffe3d2" stroke-width="7" stroke-linecap="round"/>
+              <ellipse cx="69" cy="125" rx="9" ry="5" fill="#ff8cc6" stroke="#4b3590" stroke-width="2"/>
+            </g>
+            <!-- maglietta e pantaloncini -->
+            <rect x="44" y="58" width="32" height="30" rx="13" fill="#ffb3d9" stroke="#4b3590" stroke-width="2.5"/>
+            <rect x="46" y="82" width="28" height="12" rx="6" fill="#b794f6" stroke="#4b3590" stroke-width="2.5"/>
+            <text x="60" y="78" text-anchor="middle" font-size="12" font-weight="800" fill="#fff" stroke="#4b3590" stroke-width=".8" paint-order="stroke" font-family="Arial, sans-serif">AMA</text>
+            <!-- testa -->
+            <circle cx="60" cy="36" r="21" fill="#ffe3d2" stroke="#4b3590" stroke-width="2.5"/>
+            <path d="M38 34 C38 14 82 14 82 34 C74 24 66 22 60 24 C54 22 44 24 38 34 Z" fill="#9b7be6" stroke="#4b3590" stroke-width="2.5" stroke-linejoin="round"/>
+            <path d="M40 24 C52 18 68 18 80 24" fill="none" stroke="#ffd84d" stroke-width="4.5" stroke-linecap="round"/>
+            <!-- occhi -->
+            <g class="eyesNormal">
+              <ellipse cx="51" cy="40" rx="3.6" ry="5" fill="#3b2a5a"/><circle cx="52.3" cy="38" r="1.4" fill="#fff"/>
+              <ellipse cx="69" cy="40" rx="3.6" ry="5" fill="#3b2a5a"/><circle cx="70.3" cy="38" r="1.4" fill="#fff"/>
+            </g>
+            <g class="eyesHappy" fill="none" stroke="#3b2a5a" stroke-width="2.8" stroke-linecap="round">
+              <path d="M46 41 Q51 34 56 41"/><path d="M64 41 Q69 34 74 41"/>
+            </g>
+            <circle cx="45" cy="47" r="3.6" fill="#ff9fc8" opacity=".75"/>
+            <circle cx="75" cy="47" r="3.6" fill="#ff9fc8" opacity=".75"/>
+            <path class="mouthNormal" d="M55 49 Q60 54 65 49" fill="none" stroke="#3b2a5a" stroke-width="2.2" stroke-linecap="round"/>
+            <ellipse class="mouthWow" cx="60" cy="50" rx="5" ry="4.5" fill="#ff6f9c" stroke="#3b2a5a" stroke-width="2"/>
+          </g>
+        </svg>
+        <div class="ground"></div>
+      </div>
+
+      <div class="mascot">
+        <div class="bubble" id="bubble">
+          <div class="mood-emoji" id="moodEmoji">😤</div>
+          <div class="mood-label" id="moodLabel">BORG 5 • Impegnativo</div>
+        </div>
+      </div>
+    </div>
+
+    <form class="card" id="workoutForm" novalidate>
+
+      <!-- 1. Atleta -->
+      <div class="field">
+        <label for="atleta">👧 Atleta *</label>
+        <select id="atleta" name="atleta" required>
+          <option value="" disabled selected>Scegli il tuo nome...</option>
+          <option value="Alessandra">Alessandra</option>
+          <option value="Maria">Maria</option>
+          <option value="Linda">Linda</option>
+          <option value="Giada">Giada</option>
+          <option value="Viola">Viola</option>
+          <option value="Giorgia">Giorgia</option>
+          <option value="Terry">Terry</option>
+        </select>
+      </div>
+
+      <!-- 2 e 3. Data e chilometri -->
+      <div class="row-2">
+        <div class="field">
+          <label for="dataAllenamento">📅 Data *</label>
+          <input type="date" id="dataAllenamento" name="dataAllenamento" required />
+        </div>
+        <div class="field">
+          <label for="km">👟 Km *</label>
+          <input type="text" id="km" name="km" inputmode="decimal" autocomplete="off" placeholder="es. 6.5" required />
+        </div>
+      </div>
+
+      <!-- 4. Allenamento -->
+      <div class="field">
+        <label for="allenamento">📝 Allenamento svolto *</label>
+        <textarea id="allenamento" name="allenamento" placeholder="Es. 6 km marcia sciolta + 4x100m allunghi..." required></textarea>
+      </div>
+
+      <!-- 5. Scala Borg -->
+      <div class="field">
+        <div class="borg-head">
+          <span class="lbl" style="margin:0">💥 Scala BORG (0–10)</span>
+          <span class="borg-num" id="borgValText">5</span>
+        </div>
+        <div class="borg-grid" id="borgGrid" role="group" aria-label="Scala Borg da 0 a 10"></div>
+        <input type="hidden" id="borg" name="borg" value="5" />
+
+        <div class="borg-now" id="borgNow" aria-live="polite">
+          <div class="big" id="borgNowEmoji">😤</div>
+          <div>
+            <div class="t1" id="borgNowTitle">Borg 5</div>
+            <div class="t2" id="borgNowDesc">Impegnativo</div>
+          </div>
+        </div>
+
+        <div class="legend" id="legend"></div>
+      </div>
+
+      <!-- 6. Note -->
+      <div class="field">
+        <label for="note">🩹 Note, fastidi o dolori <span class="opt">(opzionale)</span></label>
+        <input type="text" id="note" name="note" placeholder="Es. tutto ok, oppure fastidio caviglia dx..." />
+      </div>
+
+      <!-- 7. Peso -->
+      <div class="field">
+        <label for="peso">⚖️ Peso corporeo (kg) <span class="opt">(facoltativo)</span></label>
+        <input type="text" id="peso" name="peso" inputmode="decimal" autocomplete="off" placeholder="es. 52.4" />
+      </div>
+
+      <!-- Interruttore suoni -->
+      <div class="sound-toggle">
+        <span id="soundLabel">🔊 Effetti sonori manga</span>
+        <label class="switch" aria-labelledby="soundLabel">
+          <input type="checkbox" id="soundEnabled" checked />
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <button type="submit" class="submit-btn" id="submitBtn">INVIA ALLENAMENTO 🚀</button>
+      <div class="status" id="statusBox" role="status" aria-live="polite"></div>
+    </form>
+
+    <footer>
+      Atletica AMA Civitanova • Gruppo Marcia<br />Autore: Coach P. Padovan
+    </footer>
+  </div>
+
+  <!-- Livello effetti (WOW + coriandoli) -->
+  <div id="fxLayer" aria-hidden="true"></div>
+
+  <script>
+    /* =========================================================
+       CONFIGURAZIONE — indirizzo Google Apps Script (INVARIATO)
+       ========================================================= */
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwKQpBgVE5K6khwd9_gdPz5e_N6Q-Anvx6qdsoDOAwycnIaSk7eG__N8XyghuuXHs8/exec";
+
+    /* =========================================================
+       SCALA BORG — colore, emoji e descrizione di ogni livello
+       ========================================================= */
+    const BORG = [
+      { e: "🛋️", t: "Riposo totale",        d: "Oggi niente fatica, solo relax",       c: "#c9d6ff" },
+      { e: "😌", t: "Molto leggero",        d: "Quasi non senti lo sforzo",            c: "#b8ecf5" },
+      { e: "😊", t: "Molto leggero +",      d: "Parli e ridi senza problemi",          c: "#b9f0d2" },
+      { e: "🙂", t: "Leggero",              d: "Respiro tranquillo e regolare",        c: "#e2f5a8" },
+      { e: "😄", t: "Moderato",             d: "Ti scaldi, ma stai bene",              c: "#fff2a1" },
+      { e: "😤", t: "Impegnativo",         d: "Senti lo sforzo, ritmo attivo",        c: "#ffd9a0" },
+      { e: "😅", t: "Impegnativo +",        d: "Parli solo a frasi corte",             c: "#ffbfa0" },
+      { e: "🥵", t: "Molto difficile",      d: "Respiro affannato, gambe dure",        c: "#ffa3b5" },
+      { e: "😫", t: "Molto difficile +",    d: "Poche parole, tanta grinta",           c: "#ff8fc0" },
+      { e: "🤯", t: "Massimale (quasi)",    d: "Al limite, più di così no!",           c: "#d99bff" },
+      { e: "🏆", t: "Massimale",            d: "Sforzo massimo assoluto",              c: "#b57bff" }
+    ];
+    const BORG_GROUPS = [
+      { from: 0,  to: 0,  n: "0",    e: "🛋️", d: "Riposo totale"   },
+      { from: 1,  to: 2,  n: "1–2",  e: "😊", d: "Molto leggero"   },
+      { from: 3,  to: 4,  n: "3–4",  e: "🙂", d: "Leggero/moderato" },
+      { from: 5,  to: 6,  n: "5–6",  e: "😤", d: "Impegnativo"     },
+      { from: 7,  to: 8,  n: "7–8",  e: "🥵", d: "Molto difficile"  },
+      { from: 9,  to: 10, n: "9–10", e: "🏆", d: "Massimale"       }
+    ];
+    const POP_WORDS = ["Pop!", "Wow!", "Yay!", "Boing!", "Sparkle!"];
+
+    /* =========================================================
+       RIFERIMENTI AL DOM
+       ========================================================= */
+    const $ = (id) => document.getElementById(id);
+    const dataInput   = $("dataAllenamento");
+    const borgGrid    = $("borgGrid");
+    const borgInput   = $("borg");
+    const borgValText = $("borgValText");
+    const moodEmoji   = $("moodEmoji");
+    const moodLabel   = $("moodLabel");
+    const bubble      = $("bubble");
+    const girl        = $("girl");
+    const popTag      = $("popTag");
+    const borgNow     = $("borgNow");
+    const legendBox   = $("legend");
+    const soundToggle = $("soundEnabled");
+    const form        = $("workoutForm");
+    const submitBtn   = $("submitBtn");
+    const statusBox   = $("statusBox");
+    const fxLayer     = $("fxLayer");
+    const SUBMIT_LABEL = "INVIA ALLENAMENTO 🚀";
+
+    /* =========================================================
+       DATA — sempre impostata sul giorno corrente
+       ========================================================= */
+    function todayISO() {
+      const t = new Date();
+      return t.getFullYear() + "-" + String(t.getMonth() + 1).padStart(2, "0") + "-" + String(t.getDate()).padStart(2, "0");
+    }
+    dataInput.value = todayISO();
+
+    /* =========================================================
+       SUONI MANGA — Web Audio API, nessun file esterno
+       Compatibile con Safari iOS: il contesto audio nasce solo dopo
+       un tocco dell'utente e viene riattivato con resume().
+       ========================================================= */
+    let audioCtx = null, masterGain = null, audioUnlocked = false;
+
+    // Ripristina la preferenza suoni (se disponibile)
+    try {
+      const saved = localStorage.getItem("diarioMarciaSuoni");
+      if (saved === "off") soundToggle.checked = false;
+    } catch (e) { /* localStorage non disponibile: ok */ }
+
+    const soundOn = () => soundToggle.checked;
+
+    function getCtx() {
+      if (!audioCtx) {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return null;
+        audioCtx = new AC();
+        masterGain = audioCtx.createGain();
+        masterGain.gain.value = 0.9;
+        masterGain.connect(audioCtx.destination);
+      }
+      return audioCtx;
+    }
+
+    // Da chiamare dentro un gesto dell'utente (tocco/click): sblocca l'audio su iOS
+    function unlockAudio() {
+      if (!soundOn()) return;
+      const ctx = getCtx();
+      if (!ctx) return;
+      if (ctx.state !== "running" && ctx.resume) {
+        const p = ctx.resume();
+        if (p && p.catch) p.catch(() => {});
+      }
+      if (!audioUnlocked) {
+        try {
+          const buf = ctx.createBuffer(1, 1, 22050);
+          const src = ctx.createBufferSource();
+          src.buffer = buf;
+          src.connect(ctx.destination);
+          src.start(0);
+          audioUnlocked = true;
+        } catch (e) { /* ignora */ }
+      }
+    }
+    ["touchstart", "touchend", "pointerdown", "click", "keydown"].forEach((ev) =>
+      document.addEventListener(ev, unlockAudio, { passive: true })
+    );
+    document.addEventListener("visibilitychange", () => {
+      // Safari può sospendere l'audio quando l'app va in background
+      if (!document.hidden && audioCtx && audioCtx.state === "suspended" && soundOn()) {
+        audioCtx.resume().catch(() => {});
+      }
+    });
+
+    // Esegue una funzione sonora solo se i suoni sono attivi e il contesto è pronto
+    function withAudio(fn) {
+      if (!soundOn()) return;
+      const ctx = getCtx();
+      if (!ctx) return;
+      const run = () => { try { fn(ctx); } catch (e) { /* ignora */ } };
+      if (ctx.state === "running") { run(); return; }
+      const p = ctx.resume && ctx.resume();
+      if (p && p.then) p.then(run).catch(() => {}); else run();
+    }
+
+    // Singola nota con inviluppo (f = frequenza, f2 = frequenza finale opzionale)
+    function tone(ctx, o) {
+      const t = ctx.currentTime + (o.at || 0);
+      const dur = o.dur || 0.12;
+      const osc = ctx.createOscillator();
+      const g = ctx.createGain();
+      osc.type = o.type || "sine";
+      osc.frequency.setValueAtTime(o.f, t);
+      if (o.f2) osc.frequency.exponentialRampToValueAtTime(o.f2, t + dur);
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(o.vol || 0.15, t + 0.012);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      osc.connect(g);
+      g.connect(masterGain);
+      osc.start(t);
+      osc.stop(t + dur + 0.03);
+    }
+
+    // Pop! alla selezione del numero Borg (più acuto per numeri alti)
+    function soundPop(val) {
+      withAudio((ctx) => {
+        tone(ctx, { f: 520 + val * 45, f2: 240, dur: 0.1, type: "sine", vol: 0.24 });
+        tone(ctx, { f: 900 + val * 60, f2: 500, at: 0.015, dur: 0.06, type: "triangle", vol: 0.08 });
+      });
+    }
+    // Suono leggero alla scelta dell'atleta
+    function soundAthlete() {
+      withAudio((ctx) => {
+        tone(ctx, { f: 660, dur: 0.1, type: "triangle", vol: 0.14 });
+        tone(ctx, { f: 988, at: 0.08, dur: 0.14, type: "triangle", vol: 0.12 });
+      });
+    }
+    // Effetto manga all'invio
+    function soundSend() {
+      withAudio((ctx) => {
+        tone(ctx, { f: 220, f2: 1000, dur: 0.2, type: "square", vol: 0.07 });
+        tone(ctx, { f: 1400, f2: 700, at: 0.18, dur: 0.1, type: "square", vol: 0.06 });
+      });
+    }
+    // Piccola fanfara allegra alla conferma
+    function soundFanfare() {
+      withAudio((ctx) => {
+        [523.25, 659.25, 783.99, 1046.5].forEach((f, i) =>
+          tone(ctx, { f, at: i * 0.11, dur: 0.17, type: "triangle", vol: 0.17 })
+        );
+        [523.25, 659.25, 783.99, 1046.5].forEach((f) =>
+          tone(ctx, { f, at: 0.46, dur: 0.55, type: "sine", vol: 0.08 })
+        );
+      });
+    }
+    // Scintille
+    function soundSparkle() {
+      withAudio((ctx) => {
+        for (let i = 0; i < 9; i++) {
+          tone(ctx, { f: 1500 + Math.random() * 2200, at: 0.5 + i * 0.06, dur: 0.1, type: "sine", vol: 0.055 });
+        }
+      });
+    }
+
+    soundToggle.addEventListener("change", () => {
+      try { localStorage.setItem("diarioMarciaSuoni", soundToggle.checked ? "on" : "off"); } catch (e) {}
+      if (soundToggle.checked) { unlockAudio(); soundPop(6); }
+    });
+
+    /* =========================================================
+       SCALA BORG — 11 pulsanti + legenda + mascotte
+       ========================================================= */
+    // Legenda grafica
+    BORG_GROUPS.forEach((g, i) => {
+      const el = document.createElement("div");
+      el.className = "lg";
+      el.dataset.group = i;
+      el.style.background = BORG[g.from].c;
+      el.innerHTML = '<span class="e">' + g.e + '</span><span><span class="n">' + g.n +
+                     '</span><br><span class="d">' + g.d + "</span></span>";
+      legendBox.appendChild(el);
+    });
+
+    function showPopTag() {
+      popTag.textContent = POP_WORDS[Math.floor(Math.random() * POP_WORDS.length)];
+      popTag.classList.remove("show");
+      void popTag.offsetWidth; // riavvia l'animazione
+      popTag.classList.add("show");
+    }
+
+    function setBorg(val, quiet) {
+      val = Number(val);
+      const b = BORG[val];
+      borgInput.value = val;
+      borgValText.textContent = val;
+
+      // Mascotte
+      moodEmoji.textContent = b.e;
+      moodLabel.textContent = "BORG " + val + " • " + b.t;
+      bubble.style.background = b.c;
+      if (!quiet) {
+        moodEmoji.classList.remove("bounce");
+        void moodEmoji.offsetWidth;
+        moodEmoji.classList.add("bounce");
+      }
+
+      // Descrizione fatica
+      borgNow.style.background = b.c;
+      $("borgNowEmoji").textContent = b.e;
+      $("borgNowTitle").textContent = "Borg " + val + " • " + b.t;
+      $("borgNowDesc").textContent = b.d;
+
+      // Velocità di marcia legata alla fatica
+      girl.style.setProperty("--walk", Math.max(0.32, 0.9 - val * 0.055) + "s");
+
+      // Evidenzia pulsante e gruppo di legenda
+      document.querySelectorAll(".borg-btn").forEach((btn) => {
+        const on = Number(btn.dataset.val) === val;
+        btn.classList.toggle("active", on);
+        btn.setAttribute("aria-pressed", on ? "true" : "false");
+      });
+      document.querySelectorAll(".lg").forEach((el) => {
+        const g = BORG_GROUPS[el.dataset.group];
+        el.classList.toggle("on", val >= g.from && val <= g.to);
+      });
+    }
+
+    for (let i = 0; i <= 10; i++) {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "borg-btn";
+      btn.dataset.val = i;
+      btn.textContent = i;
+      btn.style.background = BORG[i].c;
+      btn.setAttribute("aria-label", "Borg " + i + ": " + BORG[i].t);
+      btn.addEventListener("click", () => {
+        unlockAudio();
+        setBorg(i);
+        showPopTag();
+        soundPop(i);
+      });
+      borgGrid.appendChild(btn);
+    }
+    setBorg(5, true);
+
+    // Suono alla selezione dell'atleta
+    $("atleta").addEventListener("change", () => { unlockAudio(); soundAthlete(); });
+
+    /* =========================================================
+       EFFETTI: WOW!, coriandoli, ragazza che festeggia
+       ========================================================= */
+    function celebrate() {
+      // Ragazza in festa
+      girl.classList.add("party");
+      setTimeout(() => girl.classList.remove("party"), 2600);
+
+      // Scritta WOW!
+      const wow = document.createElement("div");
+      wow.className = "wow";
+      wow.innerHTML = "<span>WOW!</span>";
+      fxLayer.appendChild(wow);
+      setTimeout(() => wow.remove(), 2000);
+
+      // Coriandoli e stelline
+      const bits = ["⭐", "✨", "💗", "🌸", "🎉", "💜", "🌟", "💛"];
+      for (let i = 0; i < 34; i++) {
+        const c = document.createElement("span");
+        c.className = "confetto";
+        c.textContent = bits[Math.floor(Math.random() * bits.length)];
+        c.style.left = Math.random() * 100 + "%";
+        c.style.fontSize = 14 + Math.random() * 16 + "px";
+        c.style.animationDuration = 1.6 + Math.random() * 1.6 + "s";
+        c.style.animationDelay = Math.random() * 0.5 + "s";
+        fxLayer.appendChild(c);
+        setTimeout(() => c.remove(), 3800);
+      }
+      soundSparkle();
+    }
+
+    /* =========================================================
+       UTILITÀ
+       ========================================================= */
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
+    }
+    // Accetta sia "6.5" sia "6,5" (tastiera italiana)
+    function parseDecimal(str) {
+      const clean = String(str).trim().replace(",", ".");
+      if (clean === "") return null;
+      const n = Number(clean);
+      return Number.isFinite(n) ? { n, text: clean } : NaN;
+    }
+    function showError(msg) {
+      statusBox.textContent = "⚠️ " + msg;
+      statusBox.className = "status err";
+    }
+
+    /* =========================================================
+       INVIO ALL'APPS SCRIPT
+       ========================================================= */
+    let sending = false;
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (sending) return;
+      unlockAudio();
+      statusBox.className = "status";
+      statusBox.textContent = "";
+
+      const atleta = $("atleta").value.trim();
+      const dataAllenamento = dataInput.value;
+      const allenamento = $("allenamento").value.trim();
+      const kmP = parseDecimal($("km").value);
+      const pesoP = parseDecimal($("peso").value);
+
+      // Controlli sui campi obbligatori, con messaggi chiari
+      if (!atleta) return showError("Scegli prima il tuo nome nell'elenco atlete.");
+      if (!dataAllenamento) return showError("Inserisci la data dell'allenamento.");
+      if (kmP === null || Number.isNaN(kmP) || kmP.n < 0) return showError("Inserisci i chilometri percorsi (anche decimali, es. 6.5).");
+      if (!allenamento) return showError("Scrivi cosa hai fatto nell'allenamento.");
+      if (Number.isNaN(pesoP) || (pesoP !== null && (pesoP.n < 25 || pesoP.n > 150))) {
+        return showError("Il peso non sembra corretto: lascialo vuoto oppure scrivi un valore tra 25 e 150 kg.");
+      }
+
+      // Payload: i nomi dei campi restano compatibili con Google Apps Script
+      const payload = {
+        atleta: atleta,
+        dataAllenamento: dataAllenamento,
+        allenamento: allenamento,
+        km: kmP.text,
+        borg: borgInput.value,
+        note: $("note").value.trim(),
+        peso: pesoP ? pesoP.text : ""
+      };
+
+      sending = true;
+      submitBtn.disabled = true;
+      submitBtn.textContent = "INVIO IN CORSO... ✨";
+      soundSend();
+      girl.style.setProperty("--walk", "0.3s");
+
+      try {
+        // Con mode "no-cors" la risposta è opaca: possiamo sapere che la
+        // richiesta è partita, NON che Google Sheets abbia salvato i dati.
+        await fetch(SCRIPT_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+
+        celebrate();
+        soundFanfare();
+
+        statusBox.innerHTML =
+          "📨 <strong>Allenamento inviato!</strong> Brava, <strong>" + escapeHtml(payload.atleta) + "</strong> — " +
+          escapeHtml(payload.km) + " km • BORG " + escapeHtml(payload.borg) + "." +
+          '<span class="small">Il telefono non può leggere la risposta di Google, quindi il salvataggio non è verificato da qui: il coach lo controlla nel foglio.</span>';
+        statusBox.className = "status ok";
+
+        // Pulizia campi (la data resta quella corrente e l'atleta resta scelta)
+        $("allenamento").value = "";
+        $("km").value = "";
+        $("note").value = "";
+        $("peso").value = "";
+        if (!dataInput.value) dataInput.value = todayISO();
+        setBorg(5, true);
+      } catch (err) {
+        statusBox.textContent = "❌ Invio non riuscito (controlla la connessione). I tuoi dati sono ancora qui: riprova tra un attimo.";
+        statusBox.className = "status err";
+        setBorg(Number(borgInput.value), true);
+      } finally {
+        sending = false;
+        submitBtn.disabled = false;
+        submitBtn.textContent = SUBMIT_LABEL;
+      }
+    });
+  </script>
+</body>
+</html>
